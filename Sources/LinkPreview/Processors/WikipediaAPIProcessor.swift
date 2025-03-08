@@ -62,7 +62,8 @@ public enum WikipediaAPIProcessor: MetadataProcessor {
 
         do {
             let request = HTTPClientRequest(url: url.absoluteString)
-            let response = try await HTTPClient.shared.execute(request, timeout: .seconds(5))
+            let timeoutSeconds = Int64(options.timeout ?? 5)
+            let response = try await HTTPClient.shared.execute(request, timeout: .seconds(timeoutSeconds))
             guard response.status == .ok else {
                 return
             }

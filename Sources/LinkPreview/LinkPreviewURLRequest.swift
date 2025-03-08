@@ -15,10 +15,12 @@ struct LinkPreviewURLRequest {
     }
     var request: HTTPClientRequest
     let url: URL
+    let timeout: TimeInterval
 
-    init(url: URL) {
+    init(url: URL, timeout: TimeInterval) {
         self.url = url
         self.request = .init(url: url.absoluteString)
+        self.timeout = timeout
     }
 
     mutating func setValue(_ value: String, forHTTPHeaderField field: String) {
@@ -28,7 +30,7 @@ struct LinkPreviewURLRequest {
     }
 
     func load() async throws -> Output {
-        let response = try await HTTPClient.shared.execute(request, timeout: .seconds(5))
+        let response = try await HTTPClient.shared.execute(request, timeout: .seconds(Int64(timeout)))
         guard response.status == .ok else {
             throw LinkPreviewError.unsuccessfulHTTPStatus(Int(response.status.code), response)
         }

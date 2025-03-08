@@ -66,9 +66,10 @@ public final class LinkPreviewProvider {
     /// of custom headers.
     public func load(
         from url: URL,
-        headers: [String: String] = [:]
+        headers: [String: String] = [:],
+        timeout: TimeInterval = 5,
     ) async throws -> LinkPreview {
-        var httpRequest = LinkPreviewURLRequest(url: url)
+        var httpRequest = LinkPreviewURLRequest(url: url, timeout: timeout)
         for (header, value) in headers {
             httpRequest.setValue(value, forHTTPHeaderField: header)
         }

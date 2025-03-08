@@ -61,7 +61,8 @@ public enum GenericHTMLProcessor: MetadataProcessor {
     }
 
     static func defaultFaviconIfExists(
-        for url: URL
+        for url: URL,
+        timeout: TimeInterval?
     ) async -> URL? {
         guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
             return nil
@@ -72,7 +73,8 @@ public enum GenericHTMLProcessor: MetadataProcessor {
         }
         do {
             let request = HTTPClientRequest(url: url.absoluteString)
-            let response = try await HTTPClient.shared.execute(request, timeout: .seconds(1))
+            let timeoutSeconds = Int64(timeout ?? 1)
+            let response = try await HTTPClient.shared.execute(request, timeout: .seconds(timeoutSeconds))
             guard response.status == .ok else {
                 return nil
             }
@@ -95,7 +97,7 @@ public enum GenericHTMLProcessor: MetadataProcessor {
         }
 
         if preview.faviconURL == nil && options.allowAdditionalRequests {
-            preview.faviconURL = await defaultFaviconIfExists(for: url)
+            preview.faviconURL = await defaultFaviconIfExists(for: url, timeout: options.timeout)
         }
 
         if preview.canonicalURL == nil, let document {
